@@ -1,10 +1,12 @@
 {
   "name": "youtube-mp3-app",
   "version": "1.0.13",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Download YouTube videos as MP3 files",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": {
+    "name": "Samuel Drolet"
+  },
+  "homepage": "https://github.com/ZazouSam/Project_Nad",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",

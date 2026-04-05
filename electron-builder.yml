@@ -1,5 +1,6 @@
 appId: com.zazousam.ytmp3
 productName: YouTube MP3
+copyright: Copyright © 2025 Samuel Drolet
 directories:
   buildResources: build
   output: dist-electron

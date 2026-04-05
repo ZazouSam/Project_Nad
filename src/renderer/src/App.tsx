@@ -234,6 +234,7 @@ export default function App(): React.JSX.Element {
           {state.queue.length === 0
             ? 'No songs in queue'
             : `${state.queue.length} song${state.queue.length !== 1 ? 's' : ''} • ${readyCount} ready`}
+          <span className="ml-2 opacity-40">· Made by Samuel Drolet</span>
         </p>
         <div className="flex items-center gap-2">
           {hasDoneOrFailed && !state.isDownloading && (
