@@ -93,11 +93,23 @@ export function fetchMeta(url: string): Promise<MetaResult> {
 
     let stdout = ''
     let stderr = ''
+    let settled = false
+
+    const timeout = setTimeout(() => {
+      if (!settled) {
+        settled = true
+        proc.kill()
+        resolve({ error: 'Timed out fetching video info (30s)' })
+      }
+    }, 30_000)
 
     proc.stdout.on('data', (d: Buffer) => { stdout += d.toString() })
     proc.stderr.on('data', (d: Buffer) => { stderr += d.toString() })
 
     proc.on('close', (code) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
       if (code !== 0) {
         const msg = stderr.split('\n').find((l) => l.trim()) ?? 'Unknown error'
         resolve({ error: msg })
@@ -131,7 +143,12 @@ export function fetchMeta(url: string): Promise<MetaResult> {
       }
     })
 
-    proc.on('error', (err) => resolve({ error: err.message }))
+    proc.on('error', (err) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timeout)
+      resolve({ error: err.message })
+    })
   })
 }
 

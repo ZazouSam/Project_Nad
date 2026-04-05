@@ -8,10 +8,13 @@
  * Usage:  node scripts/download-bins.mjs
  */
 
-import { createWriteStream, existsSync, mkdirSync, chmodSync } from 'fs'
+import { createWriteStream, existsSync, mkdirSync, chmodSync, copyFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { createRequire } from 'module'
 import https from 'https'
+
+const require = createRequire(import.meta.url)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const BIN_DIR = join(__dirname, '..', 'resources', 'bin')
@@ -76,7 +79,20 @@ async function main() {
   const ytdlpDest = join(BIN_DIR, YTDLP_FILE)
   await download(YTDLP_URL, ytdlpDest)
 
-  console.log('\nffmpeg is provided by the ffmpeg-static npm package (already installed).')
+  // On Windows the packaged app needs ffmpeg.exe in resources/bin/.
+  // Copy it from the ffmpeg-static devDependency (already installed by npm ci/install).
+  if (platform === 'win32') {
+    console.log('\nCopying ffmpeg.exe from ffmpeg-static...')
+    const ffmpegSrc = require('ffmpeg-static')
+    const ffmpegDest = join(BIN_DIR, 'ffmpeg.exe')
+    if (!existsSync(ffmpegDest)) {
+      copyFileSync(ffmpegSrc, ffmpegDest)
+      console.log(`  ✓ saved: ${ffmpegDest}`)
+    } else {
+      console.log(`  ✓ already exists: ${ffmpegDest}`)
+    }
+  }
+
   console.log('\nDone! Run "npm run dev" to start the app.\n')
 }
 
