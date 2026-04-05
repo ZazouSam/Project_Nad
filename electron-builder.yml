@@ -22,6 +22,7 @@ extraResources:
       - '**/*'
 win:
   executableName: youtube-mp3
+  forceCodeSigning: false
   target: nsis
 nsis:
   artifactName: ${productName}-${version}-setup.${ext}
