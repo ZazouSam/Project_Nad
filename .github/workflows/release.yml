@@ -28,7 +28,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run build:win -- --publish always
 
-  release-mac-arm64:
+  release-mac:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,15 +48,29 @@ jobs:
             -o resources/bin/yt-dlp_macos
           chmod +x resources/bin/yt-dlp_macos
 
-      - name: Download ffmpeg arm64
+      - name: Build universal ffmpeg (arm64 + x64 via lipo)
         run: |
+          # arm64 slice — native on this runner
           brew install ffmpeg
-          cp $(which ffmpeg) resources/bin/ffmpeg
-          chmod +x resources/bin/ffmpeg
+          cp $(which ffmpeg) /tmp/ffmpeg-arm64
 
-      - name: Build and publish (arm64)
+          # x64 (Intel) slice from evermeet.cx
+          curl -L "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip" -o /tmp/ffmpeg-x64.zip
+          unzip -o /tmp/ffmpeg-x64.zip -d /tmp/ffmpeg-x64-dir
+
+          # Verify what we downloaded
+          echo "arm64 slice arch:"; lipo -archs /tmp/ffmpeg-arm64
+          echo "x64 slice arch:";   lipo -archs /tmp/ffmpeg-x64-dir/ffmpeg
+
+          # Stitch into a real fat binary
+          lipo -create /tmp/ffmpeg-arm64 /tmp/ffmpeg-x64-dir/ffmpeg \
+            -output resources/bin/ffmpeg
+          chmod +x resources/bin/ffmpeg
+          echo "Universal binary arch:"; lipo -archs resources/bin/ffmpeg
+
+      - name: Build and publish (universal)
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run build:mac -- --arm64 --publish always
+        run: npm run build:mac -- --publish always
 

@@ -31,10 +31,11 @@ nsis:
 mac:
   target:
     - target: dmg
+      arch: universal
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: ${productName}-${version}.${ext}
 npmRebuild: false
 publish:
   provider: github
