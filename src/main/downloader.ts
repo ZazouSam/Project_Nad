@@ -24,6 +24,15 @@ export function getYtDlpPath(): string {
 }
 
 export function getFfmpegPath(): string {
+  // In a packaged build, always use the binary from extraResources (resources/bin/).
+  // ffmpeg-static is only used as a dev-mode convenience.
+  if (app.isPackaged) {
+    const dir = getBinDir()
+    const name = process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
+    const p = join(dir, name)
+    if (!existsSync(p)) throw new Error(`ffmpeg not found at ${p}`)
+    return p
+  }
   if (!ffmpegStaticPath) throw new Error('ffmpeg-static did not resolve a binary path')
   return ffmpegStaticPath
 }

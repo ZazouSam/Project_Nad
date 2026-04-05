@@ -14,7 +14,6 @@ files:
   - '!resources/bin/*'
 asarUnpack:
   - resources/**
-  - node_modules/ffmpeg-static/**
 extraResources:
   - from: resources/bin/
     to: bin/

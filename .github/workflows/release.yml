@@ -48,10 +48,12 @@ jobs:
             -o resources/bin/yt-dlp_macos
           chmod +x resources/bin/yt-dlp_macos
 
-      - name: Download ffmpeg (macOS)
+      - name: Download ffmpeg universal (macOS)
         run: |
-          brew install ffmpeg
-          cp $(which ffmpeg) resources/bin/ffmpeg
+          mkdir -p resources/bin
+          curl -L "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip" -o /tmp/ffmpeg.zip
+          unzip -o /tmp/ffmpeg.zip -d /tmp/ffmpeg-extract
+          cp /tmp/ffmpeg-extract/ffmpeg resources/bin/ffmpeg
           chmod +x resources/bin/ffmpeg
 
       - name: Build and publish
