@@ -28,7 +28,7 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run build:win -- --publish always
 
-  release-mac:
+  release-mac-arm64:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,16 +48,46 @@ jobs:
             -o resources/bin/yt-dlp_macos
           chmod +x resources/bin/yt-dlp_macos
 
-      - name: Download ffmpeg universal (macOS)
+      - name: Download ffmpeg arm64
         run: |
-          mkdir -p resources/bin
-          curl -L "https://evermeet.cx/ffmpeg/getrelease/ffmpeg/zip" -o /tmp/ffmpeg.zip
-          unzip -o /tmp/ffmpeg.zip -d /tmp/ffmpeg-extract
-          cp /tmp/ffmpeg-extract/ffmpeg resources/bin/ffmpeg
+          brew install ffmpeg
+          cp $(which ffmpeg) resources/bin/ffmpeg
           chmod +x resources/bin/ffmpeg
 
-      - name: Build and publish
+      - name: Build and publish (arm64)
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
-        run: npm run build:mac -- --publish always
+        run: npm run build:mac -- --arm64 --publish always
+
+  release-mac-x64:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download yt-dlp (macOS)
+        run: |
+          mkdir -p resources/bin
+          curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos \
+            -o resources/bin/yt-dlp_macos
+          chmod +x resources/bin/yt-dlp_macos
+
+      - name: Download ffmpeg x64
+        run: |
+          brew install ffmpeg
+          cp $(which ffmpeg) resources/bin/ffmpeg
+          chmod +x resources/bin/ffmpeg
+
+      - name: Build and publish (x64)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: npm run build:mac -- --x64 --publish always
