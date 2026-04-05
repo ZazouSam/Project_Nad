@@ -5,7 +5,32 @@ import icon from '../../resources/icon.png?asset'
 import { registerIpcHandlers } from './ipc'
 import { setupUpdater } from './updater'
 
-Menu.setApplicationMenu(null)
+// On macOS, removing the menu also removes standard Edit shortcuts (Cmd+V, Cmd+C…).
+// Keep a minimal menu on mac; hide it entirely on Windows/Linux via autoHideMenuBar.
+if (process.platform === 'darwin') {
+  Menu.setApplicationMenu(
+    Menu.buildFromTemplate([
+      {
+        label: app.name,
+        submenu: [{ role: 'quit' }]
+      },
+      {
+        label: 'Edit',
+        submenu: [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' },
+          { role: 'selectAll' }
+        ]
+      }
+    ])
+  )
+} else {
+  Menu.setApplicationMenu(null)
+}
 
 let mainWindow: BrowserWindow | null = null
 
