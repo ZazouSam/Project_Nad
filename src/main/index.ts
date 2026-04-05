@@ -36,6 +36,7 @@ let mainWindow: BrowserWindow | null = null
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
+    title: 'YouTube MP3',
     width: 820,
     height: 680,
     minWidth: 640,
