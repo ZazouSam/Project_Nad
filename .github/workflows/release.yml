@@ -22,6 +22,9 @@ jobs:
       - name: Download binaries
         run: node scripts/download-bins.mjs
 
+      - name: Generate icon.ico
+        run: magick build/music-note.png -define icon:auto-resize=256,128,64,48,32,16 build/icon.ico
+
       - name: Build and publish
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -47,6 +50,21 @@ jobs:
           curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos \
             -o resources/bin/yt-dlp_macos
           chmod +x resources/bin/yt-dlp_macos
+
+      - name: Generate icon.icns
+        run: |
+          mkdir -p /tmp/icon.iconset
+          sips -z 16   16   build/music-note.png --out /tmp/icon.iconset/icon_16x16.png
+          sips -z 32   32   build/music-note.png --out /tmp/icon.iconset/icon_16x16@2x.png
+          sips -z 32   32   build/music-note.png --out /tmp/icon.iconset/icon_32x32.png
+          sips -z 64   64   build/music-note.png --out /tmp/icon.iconset/icon_32x32@2x.png
+          sips -z 128  128  build/music-note.png --out /tmp/icon.iconset/icon_128x128.png
+          sips -z 256  256  build/music-note.png --out /tmp/icon.iconset/icon_128x128@2x.png
+          sips -z 256  256  build/music-note.png --out /tmp/icon.iconset/icon_256x256.png
+          sips -z 512  512  build/music-note.png --out /tmp/icon.iconset/icon_256x256@2x.png
+          sips -z 512  512  build/music-note.png --out /tmp/icon.iconset/icon_512x512.png
+          sips -z 1024 1024 build/music-note.png --out /tmp/icon.iconset/icon_512x512@2x.png
+          iconutil -c icns /tmp/icon.iconset -o build/icon.icns
 
       - name: Build universal ffmpeg (arm64 + x64 via lipo)
         run: |
