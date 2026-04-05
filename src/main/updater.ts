@@ -8,7 +8,7 @@ export function setupUpdater(win: BrowserWindow): void {
   autoUpdater.autoDownload = true
   autoUpdater.autoInstallOnAppQuit = false
 
-  autoUpdater.on('update-available', (info) => {
+  autoUpdater.on('update-downloaded', (info) => {
     win.webContents.send('updater:available', { version: info.version })
   })
 

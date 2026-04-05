@@ -72,6 +72,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  app.setName('YouTube MP3')
   electronApp.setAppUserModelId('com.zazousam.ytmp3')
 
   app.on('browser-window-created', (_, window) => {
