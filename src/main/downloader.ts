@@ -2,7 +2,6 @@ import { spawn } from 'child_process'
 import { join } from 'path'
 import { existsSync } from 'fs'
 import { app } from 'electron'
-import ffmpegStaticPath from 'ffmpeg-static'
 
 function getBinDir(): string {
   if (app.isPackaged) {
@@ -24,8 +23,7 @@ export function getYtDlpPath(): string {
 }
 
 export function getFfmpegPath(): string {
-  // In a packaged build, always use the binary from extraResources (resources/bin/).
-  // ffmpeg-static is only used as a dev-mode convenience.
+  // Packaged: always use the binary bundled in extraResources (resources/bin/).
   if (app.isPackaged) {
     const dir = getBinDir()
     const name = process.platform === 'win32' ? 'ffmpeg.exe' : 'ffmpeg'
@@ -33,8 +31,22 @@ export function getFfmpegPath(): string {
     if (!existsSync(p)) throw new Error(`ffmpeg not found at ${p}`)
     return p
   }
-  if (!ffmpegStaticPath) throw new Error('ffmpeg-static did not resolve a binary path')
-  return ffmpegStaticPath
+
+  // Dev: dynamic require so ffmpeg-static stays a devDependency and is never
+  // bundled or auto-unpacked by electron-builder in production builds.
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const devPath: string | null = require('ffmpeg-static')
+    if (devPath) return devPath
+  } catch {
+    // fall through to error
+  }
+
+  throw new Error(
+    'ffmpeg not found in dev mode.\n' +
+    'Run: node scripts/download-bins.mjs\n' +
+    '(or install ffmpeg-static: npm i -D ffmpeg-static)'
+  )
 }
 
 const INVALID_CHARS_RE = /[<>:"/\\|?*\x00-\x1f]/g
