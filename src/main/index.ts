@@ -1,7 +1,7 @@
 import { app, shell, BrowserWindow, Menu } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
+import icon from '../../build/music-note.png?asset'
 import { registerIpcHandlers } from './ipc'
 import { setupUpdater } from './updater'
 
@@ -43,7 +43,7 @@ function createWindow(): void {
     show: false,
     frame: true,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    ...(process.platform !== 'darwin' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false,
@@ -74,6 +74,7 @@ function createWindow(): void {
 app.whenReady().then(() => {
   app.setName('YouTube MP3')
   electronApp.setAppUserModelId('com.zazousam.ytmp3')
+  if (process.platform === 'darwin') app.dock?.setIcon(icon)
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
