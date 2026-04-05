@@ -41,3 +41,4 @@ publish:
   provider: github
   owner: ZazouSam
   repo: Project_Nad
+  releaseType: release
