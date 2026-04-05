@@ -71,6 +71,5 @@ jobs:
       - name: Build and publish (universal)
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          CSC_IDENTITY_AUTO_DISCOVERY: false
         run: npm run build:mac -- --publish always
 
