@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download binaries
+        run: node scripts/download-bins.mjs
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npm run build:win -- --publish always
+
+  release-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download yt-dlp (macOS)
+        run: |
+          mkdir -p resources/bin
+          curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos \
+            -o resources/bin/yt-dlp_macos
+          chmod +x resources/bin/yt-dlp_macos
+
+      - name: Download ffmpeg (macOS)
+        run: |
+          brew install ffmpeg
+          cp $(which ffmpeg) resources/bin/ffmpeg
+          chmod +x resources/bin/ffmpeg
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npm run build:mac -- --publish always

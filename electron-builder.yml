@@ -1,0 +1,43 @@
+appId: com.zazousam.ytmp3
+productName: YouTube MP3
+directories:
+  buildResources: build
+  output: dist-electron
+files:
+  - '!**/.vscode/*'
+  - '!src/*'
+  - '!electron.vite.config.{js,ts,mjs,cjs}'
+  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md}'
+  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!scripts/*'
+  - '!resources/bin/*'
+asarUnpack:
+  - resources/**
+  - node_modules/ffmpeg-static/**
+extraResources:
+  - from: resources/bin/
+    to: bin/
+    filter:
+      - '**/*'
+win:
+  executableName: youtube-mp3
+  target: nsis
+nsis:
+  artifactName: ${productName}-${version}-setup.${ext}
+  shortcutName: ${productName}
+  uninstallDisplayName: ${productName}
+  createDesktopShortcut: always
+mac:
+  target:
+    - target: dmg
+      arch: universal
+  entitlementsInherit: build/entitlements.mac.plist
+  notarize: false
+dmg:
+  artifactName: ${productName}-${version}.${ext}
+npmRebuild: false
+publish:
+  provider: github
+  owner: ZazouSam
+  repo: Project_Nad

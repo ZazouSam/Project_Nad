@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-electron
+out
+.DS_Store
+.eslintcache
+*.log*
+
+# Bundled binaries (fetched by scripts/download-bins.mjs)
+resources/bin/*.exe
+resources/bin/yt-dlp_macos
+resources/bin/ffmpeg
+resources/bin/ffmpeg.exe
